@@ -10,4 +10,6 @@
     <string name="buildItBigger">BUILD IT BIGGER</string>
     <string name="xyzReader">XYZ READER</string>
     <string name="capstone">CAPSTONE: MY OWN APP</string>
+    <string name="title_artist_list">Artists</string>
+    <string name="title_artist_detail">Artist Detail</string>
 </resources>

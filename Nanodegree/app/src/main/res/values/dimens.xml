@@ -6,4 +6,9 @@
     <dimen name="labelPaddingBottom">10dp</dimen>
     <dimen name="btnWidth">200dp</dimen>
     <dimen name="marginButtons">10dp</dimen>
+    <dimen name="paddingTextItem">10dp</dimen>
+    <dimen name="paddingImageItem">10dp</dimen>
+    <dimen name="imageItemWidth">80dp</dimen>
+    <dimen name="imageItemHeight">80dp</dimen>
+    <dimen name="paddingSearch">20dp</dimen>
 </resources>
