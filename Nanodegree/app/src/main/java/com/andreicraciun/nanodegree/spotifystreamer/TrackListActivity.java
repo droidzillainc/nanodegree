@@ -77,7 +77,7 @@ public class TrackListActivity extends FragmentActivity implements SpotifyManage
     protected void onStop() {
         super.onStop();
         Log.e("nanodegree", "TrackListActivity onStop" );
-        SpotifyManager.getInstance().setListener(null);
+        SpotifyManager.getInstance().removeListener(this);
     }
 
     @Override
@@ -95,6 +95,11 @@ public class TrackListActivity extends FragmentActivity implements SpotifyManage
         if (artistsListFragment != null) {
             artistsListFragment.updateArtistsList(artistsPager);
         }
+    }
+
+    @Override
+    public void reloadSpotifyKey() {
+
     }
 
 

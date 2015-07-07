@@ -37,8 +37,6 @@ public class ArtistsListFragment extends Fragment {
         artistsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.e("caca", "Item clicked:" + position + "  " + id);
-
                 ((ArtistListActivity)getActivity()).artistSelected(((Artist) artistsList.getAdapter().getItem(position)).id);
             }
         });
@@ -52,30 +50,11 @@ public class ArtistsListFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.e("caca", "onTextChanged:"+s);
                 SpotifyManager.getInstance().searchArtists(s.toString());
-
-//                SpotifyManager.searchArtists(s.toString(), requestToken, new Callback<ArtistsPager>() {
-//                    @Override
-//                    public void success(final ArtistsPager artistsPager, Response response) {
-//                        artistsList.post(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                artistsList.setAdapter(new ArtistsListAdapter(ArtistListActivity.this, artistsPager.artists.items));
-//                            }
-//                        });
-//                    }
-//
-//                    @Override
-//                    public void failure(RetrofitError error) {
-//
-//                    }
-//                });
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.e("caca", "afterTextChanged:"+s);
             }
         });
 

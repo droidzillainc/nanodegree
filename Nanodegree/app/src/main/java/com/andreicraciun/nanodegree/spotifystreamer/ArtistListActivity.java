@@ -46,6 +46,8 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
 
     private boolean onTablet;
 
+    private boolean spotifyInitializationPending = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +73,7 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
                 artistSelected(((Artist) artistsList.getAdapter().getItem(position)).id);
             }
         });
-        initializeSpotify();
+        initializeSpotify(false);
 
     }
 
@@ -95,13 +97,19 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
 
     }
 
-    public void initializeSpotify() {
+    public void initializeSpotify(boolean force) {
 
+        String token = null;
+        if (!force) {
 
-        SharedPreferences settings = getSharedPreferences(SPOTIFY_PREFS_NAME, 0);
-        String token = settings.getString(SPOTIFY_TOKEN, null);
+            SharedPreferences settings = getSharedPreferences(SPOTIFY_PREFS_NAME, 0);
+            token = settings.getString(SPOTIFY_TOKEN, null);
 
-        if (token == null) {
+            Log.e("nanodegree", "Token:" + token);
+
+        }
+        if ((token == null) && (!spotifyInitializationPending)) {
+            spotifyInitializationPending = true;
             AuthenticationRequest.Builder builder =
                     new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
 
@@ -123,6 +131,7 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
 
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
+            spotifyInitializationPending = false;
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
 
             switch (response.getType()) {
@@ -160,10 +169,16 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
 
     @Override
     public void updateArtistsList(ArtistsPager artistsPager) {
+        Log.e("nanodegree", "Updating asrtists list");
         ArtistsListFragment artistsListFragment = ((ArtistsListFragment)(getFragmentManager().findFragmentById(R.id.artist_list_fragment)));
         if (artistsListFragment != null) {
             artistsListFragment.updateArtistsList(artistsPager);
         }
+    }
+
+    @Override
+    public void reloadSpotifyKey() {
+        initializeSpotify(true);
     }
 
 
@@ -178,6 +193,6 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
     protected void onStop() {
         super.onStop();
         Log.e("nanodegree", "ArtistListActivity onStop" );
-        SpotifyManager.getInstance().setListener(null);
+        SpotifyManager.getInstance().removeListener(this);
     }
 }

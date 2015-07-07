@@ -30,6 +30,7 @@ public class SpotifyManager {
     private Track currentTrack;
     private AlbumSimple currentAlbum;
     private Tracks currentTracks;
+    private int currentTrackIndex;
 
     private static SpotifyManager instance = null;
 
@@ -63,6 +64,10 @@ public class SpotifyManager {
 
             @Override
             public void failure(RetrofitError error) {
+                if (listener != null) {
+                    listener.reloadSpotifyKey();
+                }
+
                 Log.e("nanodegree", "Error searching for artists:" + error );
             }
         });
@@ -84,6 +89,10 @@ public class SpotifyManager {
             @Override
             public void success(Tracks tracks, Response response) {
                 currentTracks = tracks;
+                if (currentTracks.tracks.size() > 0) {
+                    currentTrackIndex = 0;
+                    currentTrack = currentTracks.tracks.get(0);
+                }
                 if (listener != null) {
                     listener.updateTracksList(tracks);
                 }
@@ -91,6 +100,9 @@ public class SpotifyManager {
 
             @Override
             public void failure(RetrofitError error) {
+                if (listener != null) {
+                    listener.reloadSpotifyKey();
+                }
                 Log.e("nanodegree", "Error getting top tracks:" + error );
             }
         });
@@ -111,11 +123,41 @@ public class SpotifyManager {
         }.start();
     }
 
-    public SpotifyManagerListener getListener() {
-        return listener;
-    }
-
     public void setListener(SpotifyManagerListener listener) {
         this.listener = listener;
     }
+
+    public void removeListener(SpotifyManagerListener listener) {
+        if (this.listener == listener) {
+            this.listener = null;
+        }
+    }
+
+    public Track getCurrentTrack() {
+        Log.e("nanodegree", "current track:"+currentTrackIndex);
+        return currentTracks.tracks.get(currentTrackIndex);
+    }
+
+    public Tracks getCurrentTracks() {
+        return currentTracks;
+    }
+
+    public void nextTrack() {
+        Log.e("nanodegree", "next current track:"+currentTrackIndex);
+        currentTrackIndex++;
+        if (currentTrackIndex >= currentTracks.tracks.size()) {
+            currentTrackIndex = 0;
+        }
+        Log.e("nanodegree", "next track:"+currentTrackIndex);
+    }
+
+    public void previousTrack() {
+        Log.e("nanodegree", "previous current track:"+currentTrackIndex);
+        currentTrackIndex--;
+        if (currentTrackIndex < 0) {
+            currentTrackIndex = currentTracks.tracks.size() - 1;
+        }
+        Log.e("nanodegree", "previous track:"+currentTrackIndex);
+    }
+
 }

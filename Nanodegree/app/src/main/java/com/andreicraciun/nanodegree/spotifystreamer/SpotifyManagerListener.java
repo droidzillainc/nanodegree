@@ -11,4 +11,6 @@ public interface SpotifyManagerListener {
     void updateTracksList(Tracks tracks);
 
     void updateArtistsList(ArtistsPager artistsPager);
+
+    void reloadSpotifyKey();
 }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,38 +19,53 @@ import kaaes.spotify.webapi.android.models.Track;
  */
 public class SpotifyPlayerDialog extends DialogFragment {
 
-    private String artistName;
-    private String albumName;
-    private String trackName;
-    private String imageUrl;
-    private String trackUrl;
+    private View rootView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        artistName = getArguments().getString("artistName");
-        albumName = getArguments().getString("albumName");
-        trackName = getArguments().getString("trackName");
-        imageUrl = getArguments().getString("imageUrl");
-        trackUrl = getArguments().getString("trackUrl");
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.player_dialog, container,
+        rootView = inflater.inflate(R.layout.player_dialog, container,
                 false);
 
+
+        reloadVeiw();
+        return rootView;
+    }
+
+    private void reloadVeiw() {
+
+        Track currentTrack = SpotifyManager.getInstance().getCurrentTrack();
         TextView txtArtistName = (TextView) rootView.findViewById(R.id.txtArtistName);
-        txtArtistName.setText(artistName);
+        txtArtistName.setText(currentTrack.artists.get(0).name);
         TextView txtAlbumName = (TextView) rootView.findViewById(R.id.txtAlbumName);
-        txtAlbumName.setText(albumName);
+        txtAlbumName.setText(currentTrack.album.name);
         TextView txtTrackName = (TextView) rootView.findViewById(R.id.txtTrackName);
-        txtTrackName.setText(trackName);
+        txtTrackName.setText(currentTrack.name);
 
         ImageView imgTrack = (ImageView) rootView.findViewById(R.id.imgTrack);
-        Picasso.with(getActivity()).load(imageUrl).into(imgTrack);
+        Picasso.with(getActivity()).load(currentTrack.album.images.get(0).url).into(imgTrack);
 
+        ImageButton btnNext = (ImageButton) rootView.findViewById(R.id.btnNext);
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SpotifyManager.getInstance().nextTrack();
+                reloadVeiw();
+            }
+        });
 
-        return rootView;
+        ImageButton btnPrevious = (ImageButton) rootView.findViewById(R.id.btnPrevious);
+        btnPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SpotifyManager.getInstance().previousTrack();
+                reloadVeiw();
+            }
+        });
+
     }
 }
