@@ -1,30 +1,14 @@
 package com.andreicraciun.nanodegree.spotifystreamer;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ListView;
 
 import com.andreicraciun.nanodegree.R;
-import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.authentication.AuthenticationRequest;
-import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
-import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
-import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
  * Created by acraciun on 6/15/15.
@@ -69,14 +53,12 @@ public class TrackListActivity extends FragmentActivity implements SpotifyManage
     @Override
     protected void onStart() {
         super.onStart();
-        Log.e("nanodegree", "TrackListActivity onStart" );
         SpotifyManager.getInstance().setListener(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.e("nanodegree", "TrackListActivity onStop" );
         SpotifyManager.getInstance().removeListener(this);
     }
 

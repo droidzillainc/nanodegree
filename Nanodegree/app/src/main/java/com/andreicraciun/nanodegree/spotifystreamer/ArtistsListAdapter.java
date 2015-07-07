@@ -2,7 +2,6 @@ package com.andreicraciun.nanodegree.spotifystreamer;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.ArtistsPager;
 import kaaes.spotify.webapi.android.models.Image;
 
 /**
@@ -61,10 +59,6 @@ public class ArtistsListAdapter extends BaseAdapter {
         txtArtistName.setText(artists.get(position).name);
 
         List<Image> images = artists.get(position).images;
-//        Log.e("caca", "_______________________________________________________________");
-//        for (Image image:images) {
-//            Log.e("caca", image.url+ " "+image.height+", "+image.width);
-//        }
         if (images.size() > 1) {
             ImageView imageArtist = (ImageView) convertView.findViewById(R.id.imageArtist);
             Picasso.with(artistListActivity).load(images.get(images.size() - 2).url).into(imageArtist);

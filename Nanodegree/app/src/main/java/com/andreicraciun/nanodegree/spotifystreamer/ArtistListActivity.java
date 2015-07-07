@@ -1,16 +1,12 @@
 package com.andreicraciun.nanodegree.spotifystreamer;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import com.andreicraciun.nanodegree.R;
@@ -21,9 +17,6 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 import kaaes.spotify.webapi.android.models.Tracks;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
  * Created by acraciun on 6/15/15.
@@ -55,12 +48,6 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
 
         if (findViewById(R.id.tracks_list_fragment_container) != null) {
             onTablet = true;
-
-            // In two-pane mode, list items should be given the
-            // 'activated' state when touched.
-//            ((ArtistsListFragment) getFragmentManager()
-//                    .findFragmentById(R.id.artist_list))
-//                    .setActivateOnItemClick(true);
         }
 
 
@@ -68,13 +55,10 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
         artistsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.e("caca", "Item clicked:" + position + "  " + id);
-
                 artistSelected(((Artist) artistsList.getAdapter().getItem(position)).id);
             }
         });
         initializeSpotify(false);
-
     }
 
     public void artistSelected(String id) {
@@ -101,12 +85,8 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
 
         String token = null;
         if (!force) {
-
             SharedPreferences settings = getSharedPreferences(SPOTIFY_PREFS_NAME, 0);
             token = settings.getString(SPOTIFY_TOKEN, null);
-
-            Log.e("nanodegree", "Token:" + token);
-
         }
         if ((token == null) && (!spotifyInitializationPending)) {
             spotifyInitializationPending = true;
@@ -117,7 +97,6 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
             builder.setShowDialog(true);
             AuthenticationRequest request = builder.build();
 
-//        AuthenticationClient.openLoginInBrowser(this, request);
             AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
         }
         else {
@@ -147,13 +126,11 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
                 // Auth flow returned an error
                 case ERROR:
                     Log.e("nanodegree", "Got some error");
-                    // Handle error response
                     break;
 
                 // Most likely auth flow was cancelled
                 default:
                     Log.e("nanodegree", "Got default");
-                    // Handle other cases
             }
         }
     }
@@ -169,7 +146,6 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
 
     @Override
     public void updateArtistsList(ArtistsPager artistsPager) {
-        Log.e("nanodegree", "Updating asrtists list");
         ArtistsListFragment artistsListFragment = ((ArtistsListFragment)(getFragmentManager().findFragmentById(R.id.artist_list_fragment)));
         if (artistsListFragment != null) {
             artistsListFragment.updateArtistsList(artistsPager);
@@ -185,14 +161,12 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
     @Override
     protected void onStart() {
         super.onStart();
-        Log.e("nanodegree", "ArtistListActivity onStart" );
         SpotifyManager.getInstance().setListener(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.e("nanodegree", "ArtistListActivity onStop" );
         SpotifyManager.getInstance().removeListener(this);
     }
 }

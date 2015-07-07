@@ -1,12 +1,5 @@
 package com.andreicraciun.nanodegree.spotifystreamer;
 
-import android.util.Log;
-
-import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.authentication.AuthenticationRequest;
-import com.spotify.sdk.android.authentication.AuthenticationResponse;
-import com.spotify.sdk.android.player.Spotify;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,8 +60,6 @@ public class SpotifyManager {
                 if (listener != null) {
                     listener.reloadSpotifyKey();
                 }
-
-                Log.e("nanodegree", "Error searching for artists:" + error );
             }
         });
     }
@@ -103,7 +94,6 @@ public class SpotifyManager {
                 if (listener != null) {
                     listener.reloadSpotifyKey();
                 }
-                Log.e("nanodegree", "Error getting top tracks:" + error );
             }
         });
     }
@@ -114,11 +104,9 @@ public class SpotifyManager {
                 SpotifyApi api = new SpotifyApi();
                 api.setAccessToken(accessToken);
                 SpotifyService spotifyService = api.getService();
-                Log.e("caca", "id:" + artistsSpotifyId);
                 Map<String, Object> options = new HashMap<String, Object>();
                 options.put("country", locale);
                 spotifyService.getArtistTopTrack(artistsSpotifyId, options, callback);
-//                Log.e("caca", "toptracks:" + spotifyService.getArtistTopTrack(artistsSpotifyId).tracks.size());
             }
         }.start();
     }
@@ -134,7 +122,6 @@ public class SpotifyManager {
     }
 
     public Track getCurrentTrack() {
-        Log.e("nanodegree", "current track:"+currentTrackIndex);
         return currentTracks.tracks.get(currentTrackIndex);
     }
 
@@ -143,21 +130,17 @@ public class SpotifyManager {
     }
 
     public void nextTrack() {
-        Log.e("nanodegree", "next current track:"+currentTrackIndex);
         currentTrackIndex++;
         if (currentTrackIndex >= currentTracks.tracks.size()) {
             currentTrackIndex = 0;
         }
-        Log.e("nanodegree", "next track:"+currentTrackIndex);
     }
 
     public void previousTrack() {
-        Log.e("nanodegree", "previous current track:"+currentTrackIndex);
         currentTrackIndex--;
         if (currentTrackIndex < 0) {
             currentTrackIndex = currentTracks.tracks.size() - 1;
         }
-        Log.e("nanodegree", "previous track:"+currentTrackIndex);
     }
 
 }

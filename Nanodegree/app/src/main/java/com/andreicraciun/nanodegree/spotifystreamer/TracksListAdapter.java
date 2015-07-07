@@ -15,7 +15,6 @@ import com.squareup.picasso.Picasso;
 import java.util.LinkedList;
 import java.util.List;
 
-import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.Image;
 import kaaes.spotify.webapi.android.models.Track;
 
@@ -60,10 +59,6 @@ public class TracksListAdapter extends BaseAdapter {
         txtArtistName.setText(tracks.get(position).name);
 
         List<Image> images = tracks.get(position).album.images;
-//        Log.e("caca", "_______________________________________________________________");
-//        for (Image image:images) {
-//            Log.e("caca", image.url+ " "+image.height+", "+image.width);
-//        }
         if (images.size() > 1) {
             ImageView imageArtist = (ImageView) convertView.findViewById(R.id.imageArtist);
             Picasso.with(trackListActivity).load(images.get(images.size() - 2).url).into(imageArtist);
