@@ -2,6 +2,7 @@ package com.andreicraciun.nanodegree.spotifystreamer;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class TracksListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View mainView =  inflater.inflate(R.layout.tracks_list, container, false);
         tracksList = (ListView) mainView.findViewById(R.id.listTracks);
         tracksList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -48,8 +50,12 @@ public class TracksListFragment extends Fragment {
             }
         });
 
-        SpotifyManager.getInstance().getTopTracks(currentSpotifyArtistId, getResources().getConfiguration().locale.getCountry());
-
+        if (!currentSpotifyArtistId.equals(SpotifyManager.getInstance().getLastTopTracksArtistSearched())) {
+            SpotifyManager.getInstance().getTopTracks(currentSpotifyArtistId, getResources().getConfiguration().locale.getCountry());
+        }
+        else {
+            updateTracksList(SpotifyManager.getInstance().getCurrentTracks());
+        }
         return mainView;
     }
 

@@ -24,6 +24,7 @@ public class SpotifyManager {
     private AlbumSimple currentAlbum;
     private Tracks currentTracks;
     private int currentTrackIndex;
+    private String lastTopTracksArtistSearched;
 
     private static SpotifyManager instance = null;
 
@@ -75,7 +76,7 @@ public class SpotifyManager {
         }.start();
     }
 
-    public void getTopTracks(String artistSpotifyId, String locale) {
+    public void getTopTracks(final String artistSpotifyId, String locale) {
         getToptracks(accessToken, artistSpotifyId, locale, new Callback<Tracks>() {
             @Override
             public void success(Tracks tracks, Response response) {
@@ -83,6 +84,7 @@ public class SpotifyManager {
                 if (currentTracks.tracks.size() > 0) {
                     currentTrackIndex = 0;
                     currentTrack = currentTracks.tracks.get(0);
+                    lastTopTracksArtistSearched = artistSpotifyId;
                 }
                 if (listener != null) {
                     listener.updateTracksList(tracks);
@@ -143,4 +145,7 @@ public class SpotifyManager {
         }
     }
 
+    public String getLastTopTracksArtistSearched() {
+        return lastTopTracksArtistSearched;
+    }
 }

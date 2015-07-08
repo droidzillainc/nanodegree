@@ -61,6 +61,7 @@ public class ArtistsListAdapter extends BaseAdapter {
         List<Image> images = artists.get(position).images;
         if (images.size() > 1) {
             ImageView imageArtist = (ImageView) convertView.findViewById(R.id.imageArtist);
+            // url that picasso will load would not be null as images.size is 2 or above
             Picasso.with(artistListActivity).load(images.get(images.size() - 2).url).into(imageArtist);
         }
 
