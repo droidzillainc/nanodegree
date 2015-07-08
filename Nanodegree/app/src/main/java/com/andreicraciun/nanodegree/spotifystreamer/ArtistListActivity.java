@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.andreicraciun.nanodegree.R;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
@@ -158,6 +159,28 @@ public class ArtistListActivity extends FragmentActivity implements SpotifyManag
         initializeSpotify(true);
     }
 
+
+    @Override
+    public void notifyNoArtistsFound(final String prefix) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast toast = Toast.makeText(ArtistListActivity.this, getResources().getString(R.string.no_artists_found)+prefix, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+    }
+
+    @Override
+    public void notifyNoTracksFound() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast toast = Toast.makeText(ArtistListActivity.this, R.string.no_tracks_found, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+    }
 
     @Override
     protected void onStart() {

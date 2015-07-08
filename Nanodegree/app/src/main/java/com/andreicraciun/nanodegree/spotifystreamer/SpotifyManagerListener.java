@@ -13,4 +13,8 @@ public interface SpotifyManagerListener {
     void updateArtistsList(ArtistsPager artistsPager);
 
     void reloadSpotifyKey();
+
+    void notifyNoArtistsFound(String prefix);
+
+    void notifyNoTracksFound();
 }

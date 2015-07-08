@@ -61,7 +61,10 @@ public class TracksListAdapter extends BaseAdapter {
         List<Image> images = tracks.get(position).album.images;
         if (images.size() > 1) {
             ImageView imageArtist = (ImageView) convertView.findViewById(R.id.imageArtist);
-            Picasso.with(trackListActivity).load(images.get(images.size() - 2).url).into(imageArtist);
+            String imageURL = images.get(images.size() - 2).url;
+            if (imageURL != null) {
+                Picasso.with(trackListActivity).load(imageURL).into(imageArtist);
+            }
         }
 
 

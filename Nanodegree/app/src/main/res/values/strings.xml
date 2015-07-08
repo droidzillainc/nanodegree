@@ -12,4 +12,6 @@
     <string name="capstone">CAPSTONE: MY OWN APP</string>
     <string name="title_artist_list">Artists</string>
     <string name="title_artist_detail">Artist Detail</string>
+    <string name="no_tracks_found">No tracks found for artist.</string>
+    <string name="no_artists_found">No artists found for: </string>
 </resources>

@@ -1,5 +1,7 @@
 package com.andreicraciun.nanodegree.spotifystreamer;
 
+import com.andreicraciun.nanodegree.R;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,11 +49,14 @@ public class SpotifyManager {
         this.accessToken = accessToken;
     }
 
-    public void searchArtists(String prefix) {
+    public void searchArtists(final String prefix) {
         searchArtists(prefix, accessToken, new Callback<ArtistsPager>() {
             @Override
             public void success(ArtistsPager artistsPager, Response response) {
                 if (listener != null) {
+                    if (artistsPager.artists.items.size() == 0) {
+                        listener.notifyNoArtistsFound(prefix);
+                    }
                     listener.updateArtistsList(artistsPager);
                 }
             }
@@ -87,6 +92,9 @@ public class SpotifyManager {
                     lastTopTracksArtistSearched = artistSpotifyId;
                 }
                 if (listener != null) {
+                    if (currentTracks.tracks.size() == 0) {
+                        listener.notifyNoTracksFound();
+                    }
                     listener.updateTracksList(tracks);
                 }
             }

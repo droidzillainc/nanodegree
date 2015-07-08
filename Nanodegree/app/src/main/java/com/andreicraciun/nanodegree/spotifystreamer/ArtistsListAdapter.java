@@ -2,6 +2,7 @@ package com.andreicraciun.nanodegree.spotifystreamer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import com.andreicraciun.nanodegree.R;
 import com.squareup.picasso.Picasso;
 
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -61,8 +63,10 @@ public class ArtistsListAdapter extends BaseAdapter {
         List<Image> images = artists.get(position).images;
         if (images.size() > 1) {
             ImageView imageArtist = (ImageView) convertView.findViewById(R.id.imageArtist);
-            // url that picasso will load would not be null as images.size is 2 or above
-            Picasso.with(artistListActivity).load(images.get(images.size() - 2).url).into(imageArtist);
+            String imageURL = images.get(images.size() - 2).url;
+            if (imageURL != null) {
+                Picasso.with(artistListActivity).load(imageURL).into(imageArtist);
+            }
         }
 
 

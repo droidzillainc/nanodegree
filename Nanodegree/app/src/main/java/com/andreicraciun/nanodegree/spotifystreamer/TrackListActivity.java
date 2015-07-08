@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.andreicraciun.nanodegree.R;
 
@@ -84,5 +85,26 @@ public class TrackListActivity extends FragmentActivity implements SpotifyManage
 
     }
 
+    @Override
+    public void notifyNoArtistsFound(final String prefix) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast toast = Toast.makeText(TrackListActivity.this, getResources().getString(R.string.no_artists_found)+prefix, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+    }
+
+    @Override
+    public void notifyNoTracksFound() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast toast = Toast.makeText(TrackListActivity.this, R.string.no_tracks_found, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+    }
 
 }
