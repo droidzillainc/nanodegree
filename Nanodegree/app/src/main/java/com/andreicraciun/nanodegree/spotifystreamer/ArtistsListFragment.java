@@ -45,7 +45,12 @@ public class ArtistsListFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                SpotifyManager.getInstance().searchArtists(s.toString());
+                if (s.toString().equals(SpotifyManager.getInstance().getLastPrefixSearched())) {
+                    updateArtistsList(SpotifyManager.getInstance().getCurrentArtists());
+                }
+                else {
+                    SpotifyManager.getInstance().searchArtists(s.toString());
+                }
             }
 
             @Override

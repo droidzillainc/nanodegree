@@ -9,6 +9,7 @@ import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.AlbumSimple;
 import kaaes.spotify.webapi.android.models.Artist;
+import kaaes.spotify.webapi.android.models.Artists;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
@@ -21,7 +22,8 @@ import retrofit.client.Response;
  */
 public class SpotifyManager {
 
-    private Artist currentArtist;
+    private ArtistsPager currentArtists;
+    private String lastPrefixSearched;
     private Track currentTrack;
     private AlbumSimple currentAlbum;
     private Tracks currentTracks;
@@ -53,6 +55,8 @@ public class SpotifyManager {
         searchArtists(prefix, accessToken, new Callback<ArtistsPager>() {
             @Override
             public void success(ArtistsPager artistsPager, Response response) {
+                lastPrefixSearched = prefix;
+                currentArtists = artistsPager;
                 if (listener != null) {
                     if (artistsPager.artists.items.size() == 0) {
                         listener.notifyNoArtistsFound(prefix);
@@ -155,5 +159,13 @@ public class SpotifyManager {
 
     public String getLastTopTracksArtistSearched() {
         return lastTopTracksArtistSearched;
+    }
+
+    public ArtistsPager getCurrentArtists() {
+        return currentArtists;
+    }
+
+    public String getLastPrefixSearched() {
+        return lastPrefixSearched;
     }
 }
