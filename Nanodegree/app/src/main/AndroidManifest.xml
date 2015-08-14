@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.andreicraciun.nanodegree" >
+    package="com.andreicraciun.nanodegree">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -11,11 +11,11 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MyAppPortofolioActivity"
-            android:label="@string/app_name"
-            android:configChanges="orientation|screenSize">
+            android:configChanges="orientation|screenSize"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,33 +24,40 @@
         </activity>
         <activity
             android:name=".spotifystreamer.ArtistListActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_artist_list"
-            android:parentActivityName=".MyAppPortofolioActivity"
-            android:configChanges="orientation|screenSize">
+            android:parentActivityName=".MyAppPortofolioActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.andreicraciun.nanodegree.MyAppPortofolioActivity" />
 
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
-                // this needs to match the scheme and host of the redirect URI as defined in My applications page
                 <data
                     android:host="callback"
-                    android:scheme="rubixnanodegree"/>
+                    android:scheme="rubixnanodegree" />
             </intent-filter>
 
         </activity>
         <activity
             android:name=".spotifystreamer.TrackListActivity"
-            android:configChanges="orientation|screenSize"
-        />
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <service android:name=".spotifystreamer.PlayerService">
+            <intent-filter>
+                <action android:name="com.andreicraciun.nanodegree.spotifystreamer.PLAY" />
+                <action android:name="com.andreicraciun.nanodegree.spotifystreamer.PAUSE" />
+                <action android:name="com.andreicraciun.nanodegree.spotifystreamer.RESUME" />
+                <action android:name="com.andreicraciun.nanodegree.spotifystreamer.SEEK" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

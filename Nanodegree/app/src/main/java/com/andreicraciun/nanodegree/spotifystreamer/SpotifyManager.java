@@ -168,4 +168,8 @@ public class SpotifyManager {
     public String getLastPrefixSearched() {
         return lastPrefixSearched;
     }
+
+    public void setCurrentTrackIndex(int currentTrackIndex) {
+        this.currentTrackIndex = currentTrackIndex;
+    }
 }

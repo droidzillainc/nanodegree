@@ -1,12 +1,13 @@
 package com.andreicraciun.nanodegree.spotifystreamer;
 
+import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,16 +28,19 @@ import kaaes.spotify.webapi.android.models.Track;
 public class SpotifyPlayerDialog extends DialogFragment {
 
     private View rootView;
-    private MediaPlayer mediaPlayer = new MediaPlayer();
 
     private enum PLAY_STATE {NOT_INITIALIZED, PLAYING, PAUSED};
 
     private PLAY_STATE play_state = PLAY_STATE.NOT_INITIALIZED;
 
-    private Handler handler = new Handler();
+    private SeekBar seekBar;
+    private TextView txtElapsed;
+    private ImageButton btnPlayPause;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
     }
 
@@ -60,19 +64,25 @@ public class SpotifyPlayerDialog extends DialogFragment {
         TextView txtTrackName = (TextView) rootView.findViewById(R.id.txtTrackName);
         txtTrackName.setText(currentTrack.name);
 
+        txtElapsed = (TextView) rootView.findViewById(R.id.txtStartTime);
+
         TextView txtDuration = (TextView) rootView.findViewById(R.id.txtEndTime);
         long seconds = ((currentTrack.duration_ms/1000)%60);
         long minutes = ((currentTrack.duration_ms/1000)/60);
         String duration = minutes +":"+ (seconds < 10 ? "0"+seconds:seconds);
         txtDuration.setText(duration);
 
-        final SeekBar seekBar = (SeekBar) rootView.findViewById(R.id.playSeekBar);
+        seekBar = (SeekBar) rootView.findViewById(R.id.playSeekBar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             private boolean touching = false;
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (touching) {
-                    mediaPlayer.seekTo(progress * 1000);
+                    Intent seekIntent = new Intent();
+                    seekIntent.putExtra("seekTo", progress * 1000);
+                    seekIntent.setAction(PlayerService.ACTION_SEEK);
+                    seekIntent.setPackage("com.andreicraciun.nanodegree");
+                    getActivity().startService(seekIntent);
                 }
             }
 
@@ -88,49 +98,13 @@ public class SpotifyPlayerDialog extends DialogFragment {
         });
 
         ImageView imgTrack = (ImageView) rootView.findViewById(R.id.imgTrack);
-        Picasso.with(getActivity()).load(currentTrack.album.images.get(0).url).into(imgTrack);
+        Picasso.with(getActivity()).load(currentTrack.album.images.get(1).url).into(imgTrack);
 
-        final ImageButton btnPlayPause = (ImageButton) rootView.findViewById(R.id.btnPlayPause);
+        btnPlayPause = (ImageButton) rootView.findViewById(R.id.btnPlayPause);
         btnPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    switch (play_state)
-                    {
-                        case NOT_INITIALIZED:
-                            Uri myUri = Uri.parse(currentTrack.preview_url);
-
-                            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                            mediaPlayer.setDataSource(getActivity(), myUri);
-                            mediaPlayer.prepare();
-                            mediaPlayer.start();
-                            seekBar.setMax(mediaPlayer.getDuration()/1000);
-                            play_state = PLAY_STATE.PLAYING;
-                            btnPlayPause.setImageResource(android.R.drawable.ic_media_pause);
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    seekBar.setProgress(mediaPlayer.getCurrentPosition()/1000);
-                                    if (play_state == PLAY_STATE.PLAYING){
-                                        handler.postDelayed(this, 1000);
-                                    }
-                                }
-                            });
-                            break;
-                        case PLAYING:
-                            mediaPlayer.pause();
-                            play_state = PLAY_STATE.PAUSED;
-                            btnPlayPause.setImageResource(android.R.drawable.ic_media_play);
-                            break;
-                        case PAUSED:
-                            mediaPlayer.start();
-                            play_state = PLAY_STATE.PLAYING;
-                            btnPlayPause.setImageResource(android.R.drawable.ic_media_pause);
-                            break;
-                    }
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                }
+                play(getActivity());
             }
         });
 
@@ -138,13 +112,22 @@ public class SpotifyPlayerDialog extends DialogFragment {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaPlayer.reset();
-                play_state = PLAY_STATE.NOT_INITIALIZED;
-                btnPlayPause.setImageResource(android.R.drawable.ic_media_play);
+
                 seekBar.setProgress(0);
 
                 SpotifyManager.getInstance().nextTrack();
                 reloadVeiw();
+                updateUlapsedTime(0);
+
+                if (play_state == PLAY_STATE.PLAYING) {
+                    Intent playIntent = new Intent();
+                    playIntent.setAction(PlayerService.ACTION_PLAY);
+                    playIntent.setPackage("com.andreicraciun.nanodegree");
+                    getActivity().startService(playIntent);
+                }
+                else {
+                    play_state = PLAY_STATE.NOT_INITIALIZED;
+                }
             }
         });
 
@@ -152,13 +135,22 @@ public class SpotifyPlayerDialog extends DialogFragment {
         btnPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaPlayer.reset();
-                play_state = PLAY_STATE.NOT_INITIALIZED;
-                btnPlayPause.setImageResource(android.R.drawable.ic_media_play);
+
                 seekBar.setProgress(0);
 
                 SpotifyManager.getInstance().previousTrack();
                 reloadVeiw();
+                updateUlapsedTime(0);
+
+                if (play_state == PLAY_STATE.PLAYING) {
+                    Intent playIntent = new Intent();
+                    playIntent.setAction(PlayerService.ACTION_PLAY);
+                    playIntent.setPackage("com.andreicraciun.nanodegree");
+                    getActivity().startService(playIntent);
+                }
+                else {
+                    play_state = PLAY_STATE.NOT_INITIALIZED;
+                }
             }
         });
 
@@ -167,8 +159,80 @@ public class SpotifyPlayerDialog extends DialogFragment {
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (mediaPlayer!= null) {
-            mediaPlayer.release();
+    }
+
+    public void play(Activity activity) {
+        try {
+            switch (play_state)
+            {
+                case NOT_INITIALIZED:
+                    Intent playIntent = new Intent();
+                    playIntent.setAction(PlayerService.ACTION_PLAY);
+                    playIntent.setPackage("com.andreicraciun.nanodegree");
+
+                    activity.startService(playIntent);
+                    play_state = PLAY_STATE.PLAYING;
+                    btnPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+                    break;
+                case PLAYING:
+                    Intent pauseIntent = new Intent();
+                    pauseIntent.setAction(PlayerService.ACTION_PAUSE);
+                    pauseIntent.setPackage("com.andreicraciun.nanodegree");
+                    activity.startService(pauseIntent);
+                    play_state = PLAY_STATE.PAUSED;
+                    btnPlayPause.setImageResource(android.R.drawable.ic_media_play);
+                    break;
+                case PAUSED:
+                    Intent resumeIntent = new Intent();
+                    resumeIntent.setAction(PlayerService.ACTION_RESUME);
+                    resumeIntent.setPackage("com.andreicraciun.nanodegree");
+                    activity.startService(resumeIntent);
+
+                    play_state = PLAY_STATE.PLAYING;
+                    btnPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+                    break;
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
+    }
+
+    private BroadcastReceiver playingStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                int songLength = bundle.getInt("songLength");
+                int currentPosition = bundle.getInt("currentPosition");
+                boolean onCompletion = bundle.getBoolean("onCompletion");
+                seekBar.setMax(songLength);
+                seekBar.setProgress(currentPosition);
+                updateUlapsedTime(currentPosition);
+                if (onCompletion && currentPosition > 0) {
+                    play_state = PLAY_STATE.NOT_INITIALIZED;
+                    btnPlayPause.setImageResource(android.R.drawable.ic_media_play);
+                }
+            }
+        }
+    };
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        activity.registerReceiver(playingStateReceiver, new IntentFilter(PlayerService.ACTION_PLAYING_STATE_NOTIFICATION));
+    }
+
+    @Override
+    public void onDetach() {
+        getActivity().unregisterReceiver(playingStateReceiver);
+        super.onDetach();
+    }
+
+    private void updateUlapsedTime(int elapsedSeconds) {
+        long seconds = (elapsedSeconds % 60);
+        long minutes = (elapsedSeconds / 60);
+        String duration = minutes +":"+ (seconds < 10 ? "0"+seconds:seconds);
+        txtElapsed.setText(duration);
+
     }
 }

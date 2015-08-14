@@ -44,9 +44,11 @@ public class TracksListFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Track track = ((Track)(((TracksListAdapter)(tracksList.getAdapter())).getItem(position)));
+//                Track track = ((Track)(((TracksListAdapter)(tracksList.getAdapter())).getItem(position)));
+                SpotifyManager.getInstance().setCurrentTrackIndex(position);
                 SpotifyPlayerDialog spotifyPlayerDialog = new SpotifyPlayerDialog();
                 spotifyPlayerDialog.show(getFragmentManager(), "SPD");
+                spotifyPlayerDialog.play(getActivity());
             }
         });
 
